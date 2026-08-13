@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Heart-Fit — 개인 맞춤 활동 상태창</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family:
+          "Poppins",
+          "Pretendard",
+          -apple-system,
+          BlinkMacSystemFont,
+          system-ui,
+          Roboto,
+          sans-serif;
+      }
+
+      :root {
+        --bg: #f8fafc;
+        --panel: #ffffff;
+        --border: #f1f5f9;
+        --primary: #4894fe;
+        --primary-soft: rgba(99, 180, 255, 0.1);
+        --text: #0d1b34;
+        --muted: #8696bb;
+        --muted-soft: rgba(134, 150, 187, 0.7);
+        --success: #20c559;
+        --warning: #ff8b00;
+        --warning-bg: #fff7e8;
+        --danger: #991b1b;
+        --danger-bg: #fef2f2;
+        --hero-danger: #e04d5a;
+        --shadow-card: 0px 8px 24px 0px rgba(0, 0, 0, 0.04);
+        --shadow-soft: 0px 4px 16px 0px rgba(0, 0, 0, 0.03);
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      .page-shell {
+        max-width: 392px;
+        margin: 0 auto;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .topbar-greet {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .greet-hello {
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.2;
+        color: var(--muted);
+      }
+
+      .greet-name {
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.1;
+        color: var(--text);
+      }
+
+      .avatar-frame {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        overflow: hidden;
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .avatar-frame img {
+        position: absolute;
+        top: -3px;
+        left: 0;
+        width: 82.574px;
+        height: 74.889px;
+        max-width: none;
+      }
+
+      .profile-card,
+      .hero-card,
+      .rx-card,
+      .clinical-tip,
+      .safety-banner,
+      details.env-details {
+        background: var(--panel);
+        border: 1px solid var(--border);
+      }
+
+      .profile-card {
+        border-radius: 15px;
+        box-shadow: var(--shadow-card);
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .profile-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .d-day-badge {
+        display: inline-flex;
+        align-items: center;
+        background: var(--primary-soft);
+        color: var(--primary);
+        padding: 5px 12px;
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .settings-gear {
+        background: none;
+        border: none;
+        padding: 0;
+        color: var(--primary);
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .profile-grid {
+        background: var(--bg);
+        border-radius: 16px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+      }
+
+      .profile-cell {
+        flex: 1 0 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .profile-cell .cell-label {
+        font-size: 11px;
+        font-weight: 400;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .profile-cell .cell-value {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .profile-cell .cell-unit {
+        font-size: 10px;
+        font-weight: 400;
+        color: var(--muted-soft);
+      }
+
+      .hero-card {
+        border-radius: 28px;
+        border-color: rgba(255, 255, 255, 0.7);
+        box-shadow: 0px 10px 30px 0px rgba(0, 0, 0, 0.03);
+        backdrop-filter: blur(10px);
+        padding: 24px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        text-align: center;
+        background: var(--primary);
+        transition: background-color 0.2s ease;
+      }
+
+      .hero-card.warning {
+        background: var(--warning);
+      }
+
+      .hero-card.danger {
+        background: var(--hero-danger);
+      }
+
+      .main-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        padding: 8px 16px;
+        border-radius: 10px;
+        box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.06);
+        font-size: 14px;
+        font-weight: 700;
+        color: #000;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--success);
+        flex-shrink: 0;
+      }
+
+      .status-dot.warning {
+        background: var(--warning);
+      }
+
+      .status-dot.danger {
+        background: var(--hero-danger);
+      }
+
+      .hero-title {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.3;
+        color: #fff;
+      }
+
+      .hero-sub {
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 1.45;
+        color: #fff;
+      }
+
+      .rx-card {
+        border-radius: 24px;
+        box-shadow: var(--shadow-card);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .rx-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .rx-title .emoji {
+        font-size: 23px;
+      }
+
+      .rx-title .label {
+        font-size: 15px;
+      }
+
+      .rx-grid {
+        display: flex;
+        align-items: stretch;
+        gap: 8px;
+      }
+
+      .rx-item {
+        flex: 1 0 0;
+        min-width: 0;
+        background: #fafafa;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .rx-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+
+      .rx-value {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-wrap: wrap;
+      }
+
+      .rx-num {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .rx-unit {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--muted-soft);
+      }
+
+      .gold-time-banner {
+        background: var(--warning-bg);
+        border-radius: 14px;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
+
+      .gold-time-banner img {
+        width: 20px;
+        height: 20px;
+      }
+
+      .gold-time-banner span {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--warning);
+      }
+
+      .clinical-tip {
+        border-radius: 18px;
+        box-shadow: var(--shadow-soft);
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .clinical-tip .tip-text {
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.6;
+        color: #475569;
+      }
+
+      .clinical-tip .tip-source {
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 1.6;
+        color: rgba(71, 85, 105, 0.5);
+      }
+
+      .safety-banner {
+        background: var(--danger-bg);
+        border: none;
+        border-radius: 14px;
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        color: var(--danger);
+      }
+
+      .safety-banner .safety-title {
+        font-size: 12.5px;
+        font-weight: 500;
+      }
+
+      .safety-banner .safety-desc {
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.5;
+      }
+
+      details.env-details {
+        border-radius: 20px;
+        box-shadow: var(--shadow-soft);
+        padding: 16px;
+      }
+
+      summary {
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+      }
+
+      summary::-webkit-details-marker {
+        display: none;
+      }
+
+      summary .summary-title {
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      summary .summary-toggle {
+        font-weight: 600;
+        color: rgba(13, 27, 52, 0.5);
+      }
+
+      .env-section {
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+      }
+
+      .env-section-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .env-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .env-metric {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 10px 12px;
+      }
+
+      .env-metric.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .env-metric-label {
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .env-metric-val {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .env-metric-val.good {
+        color: #17974f;
+      }
+      .env-metric-val.moderate {
+        color: #c77f0d;
+      }
+      .env-metric-val.bad {
+        color: #d7681e;
+      }
+      .env-metric-val.danger {
+        color: var(--danger);
+      }
+
+      .env-reason-box {
+        margin-top: 12px;
+        background: var(--primary-soft);
+        border: 1px solid rgba(72, 148, 254, 0.16);
+        border-radius: 14px;
+        padding: 12px;
+        font-size: 12px;
+        line-height: 1.6;
+        color: #1f5fb8;
+        white-space: pre-line;
+      }
+
+      .env-source {
+        margin-top: 10px;
+        font-size: 11px;
+        color: var(--muted);
+        text-align: right;
+      }
+
+      .env-status-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 50px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+      }
+
+      .env-status-pill.safe {
+        background: rgba(32, 197, 89, 0.12);
+        color: #17974f;
+      }
+      .env-status-pill.warning {
+        background: var(--warning-bg);
+        color: var(--warning);
+      }
+      .env-status-pill.danger {
+        background: var(--danger-bg);
+        color: var(--danger);
+      }
+
+      .env-loading {
+        text-align: center;
+        padding: 16px 8px 6px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .env-loading .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--border);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(13, 27, 52, 0.38);
+        backdrop-filter: blur(8px);
+        z-index: 100;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .modal-content {
+        width: min(100%, 360px);
+        background: var(--panel);
+        border-radius: 26px;
+        padding: 22px 18px 18px;
+        box-shadow: var(--shadow-card);
+      }
+
+      .modal-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: var(--text);
+      }
+
+      .form-group {
+        margin-bottom: 12px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 11px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        font-size: 13px;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .modal-btn {
+        flex: 1;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 10px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .btn-close {
+        background: var(--bg);
+        color: var(--muted);
+      }
+
+      .btn-save {
+        background: var(--primary);
+        color: #fff;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="topbar-greet">
+          <span class="greet-hello">Hello,</span>
+          <span class="greet-name">MIKA!</span>
+        </div>
+        <div class="avatar-frame">
+          <img src="assets/avatar-fill.svg" alt="프로필 아이콘" />
+        </div>
+      </header>
+
+      <div class="profile-card">
+        <div class="profile-header">
+          <span class="d-day-badge">관상동맥우회술 +45일</span>
+          <button
+            class="settings-gear"
+            onclick="toggleModal(true)"
+            aria-label="설정 열기"
+          >
+            ⚙️
+          </button>
+        </div>
+
+        <div class="profile-grid">
+          <div class="profile-cell">
+            <span class="cell-label">목표 심박수(bpm)</span>
+            <span class="cell-value" id="dispThr">95-110</span>
+            <span class="cell-unit">bpm</span>
+          </div>
+          <div class="profile-cell">
+            <span class="cell-label">신체(Cm/Kg)</span>
+            <span class="cell-value" id="dispBody">160/51</span>
+            <span class="cell-unit">Cm/Kg</span>
+          </div>
+          <div class="profile-cell">
+            <span class="cell-label">베타블로커</span>
+            <span class="cell-value" id="dispMed">Y</span>
+            <span class="cell-unit">목표</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-card safe" id="heroCard">
+        <div class="main-status-badge" id="statusBadge">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">활동 원활</span>
+        </div>
+        <div class="hero-title" id="heroTitle">
+          환경 데이터를 불러오는 중...
+        </div>
+        <div class="hero-sub" id="heroSub">위치 정보를 확인하고 있습니다.</div>
+      </div>
+
+      <div class="rx-card">
+        <div class="rx-title">
+          <span class="emoji">🏃🏻‍♀️</span>
+          <span class="label">오늘의 운동 처방</span>
+        </div>
+
+        <div class="rx-grid">
+          <div class="rx-item">
+            <span class="rx-label">권장 활동시간</span>
+            <div class="rx-value" id="rxDuration">
+              <span class="rx-num">25</span><span class="rx-unit">분</span
+              ><span class="rx-unit">(준비 10분)</span>
+            </div>
+          </div>
+          <div class="rx-item">
+            <span class="rx-label">목표 심박수</span>
+            <div class="rx-value">
+              <span class="rx-num" id="rxThr">90-105</span
+              ><span class="rx-unit">bpm</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rx-grid">
+          <div class="rx-item">
+            <span class="rx-label">체감 강도</span>
+            <div class="rx-value" id="rxRpe">
+              <span class="rx-num">보통</span
+              ><span class="rx-unit">(RPE 11-13)</span>
+            </div>
+          </div>
+          <div class="rx-item">
+            <span class="rx-label">세션</span>
+            <div class="rx-value">
+              <span class="rx-num">10분 후</span
+              ><span class="rx-unit">3분 휴식</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gold-time-banner">
+          <img src="assets/clock-icon.svg" alt="" />
+          <span id="goldenTime">추천 골든타임 · 오전 9시 ~ 11시</span>
+        </div>
+      </div>
+
+      <div class="clinical-tip">
+        <p class="tip-text">
+          💡 임상 팁 : 수술 후 8주간 지속적인 유산소 활동을 유지하면 쉬고 있을
+          때의 심박수가 평균 8.7bpm 낮아지고, 걸을 때 심장이 쓰는 산소
+          소모량이 약 11% 감소합니다.
+        </p>
+        <p class="tip-source">
+          *세종병원 2013 · 유산소운동이 관상동맥 우회술 환자의 심폐
+          운동능력에 미치는 영향
+        </p>
+      </div>
+
+      <div class="safety-banner">
+        <p class="safety-title">⚠ 즉시 중단 신호</p>
+        <p class="safety-desc">
+          가슴 답답함, 흉통, 어지럼증, 식은땀 발생 시 즉시 활동을 중단하고
+          휴식하십시오.
+        </p>
+      </div>
+
+      <details class="env-details">
+        <summary>
+          <span class="summary-title">환경 근거 자세히 보기</span>
+          <span class="summary-toggle" id="envToggleLabel">열기</span>
+        </summary>
+        <div id="envContent">
+          <div class="env-loading">
+            <span class="spinner"></span>실시간 환경 데이터를 불러오는 중...
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <div class="modal-overlay" id="settingModal">
+      <div class="modal-content">
+        <div class="modal-title">⚙️ 개인 프로필 설정</div>
+        <div class="form-group">
+          <label>수술 날짜</label>
+          <input type="date" id="inputOpDate" value="2026-06-21" />
+        </div>
+        <div class="form-group">
+          <label>처방 목표 심박수 (bpm)</label>
+          <div style="display: flex; gap: 8px">
+            <input type="number" id="inputThrMin" value="95" />
+            <input type="number" id="inputThrMax" value="110" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>키 (cm) / 체중 (kg)</label>
+          <div style="display: flex; gap: 8px">
+            <input type="number" id="inputHeight" value="160" />
+            <input type="number" id="inputWeight" value="51" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>베타블로커 복용 여부</label>
+          <select id="selectBeta">
+            <option value="Y" selected>복용 중 (Y)</option>
+            <option value="N">미복용 (N)</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-btn btn-close" onclick="toggleModal(false)">
+            취소
+          </button>
+          <button class="modal-btn btn-save" onclick="saveProfile()">
+            저장하기
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleModal(show) {
+        document.getElementById("settingModal").style.display = show
+          ? "flex"
+          : "none";
+      }
+
+      function saveProfile() {
+        const min = document.getElementById("inputThrMin").value;
+        const max = document.getElementById("inputThrMax").value;
+        const height = document.getElementById("inputHeight").value;
+        const weight = document.getElementById("inputWeight").value;
+        const beta = document.getElementById("selectBeta").value;
+
+        document.getElementById("dispThr").innerText = `${min}-${max}`;
+        document.getElementById("rxThr").innerText = `${min}-${max}`;
+        document.getElementById("dispBody").innerText =
+          `${height}/${weight}`;
+        document.getElementById("dispMed").innerText = beta;
+
+        toggleModal(false);
+      }
+
+      function getPm25Class(value) {
+        if (value <= 15) return "good";
+        if (value <= 35) return "moderate";
+        if (value <= 75) return "bad";
+        return "danger";
+      }
+
+      function updatePrescription(status) {
+        const dur = document.getElementById("rxDuration");
+        const rpe = document.getElementById("rxRpe");
+
+        if (status === "danger") {
+          dur.innerHTML =
+            '<span class="rx-num">0분</span><span class="rx-unit">(야외 금지)</span>';
+          rpe.innerHTML =
+            '<span class="rx-num">금지</span><span class="rx-unit">(실내 대체)</span>';
+        } else if (status === "warning") {
+          dur.innerHTML =
+            '<span class="rx-num">15</span><span class="rx-unit">분</span><span class="rx-unit">(준비 5분)</span>';
+          rpe.innerHTML =
+            '<span class="rx-num">가볍게</span><span class="rx-unit">(RPE 9-11)</span>';
+        } else {
+          dur.innerHTML =
+            '<span class="rx-num">25</span><span class="rx-unit">분</span><span class="rx-unit">(준비 10분)</span>';
+          rpe.innerHTML =
+            '<span class="rx-num">보통</span><span class="rx-unit">(RPE 11-13)</span>';
+        }
+      }
+
+      function updateHeroState(status, badgeText) {
+        const heroCard = document.getElementById("heroCard");
+        const dot = document.getElementById("statusDot");
+        const text = document.getElementById("statusText");
+
+        heroCard.className = `hero-card ${status}`;
+        dot.className = `status-dot ${status}`;
+        text.innerText = badgeText.replace(/^\S+\s*/, "");
+      }
+
+      async function loadHealthData(lat, lon) {
+        try {
+          const res = await fetch(`/api/health-status?lat=${lat}&lon=${lon}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+
+          // 메인 상태 업데이트 (히어로 카드 배경 + 배지 점 색상)
+          updateHeroState(data.status, data.badge);
+
+          document.getElementById("heroTitle").innerText = data.title;
+          document.getElementById("heroSub").innerText = data.sub;
+
+          // 처방 업데이트
+          updatePrescription(data.status);
+
+          // 추천 골든타임
+          if (data.goldenTime) {
+            document.getElementById("goldenTime").innerText =
+              `추천 골든타임 · ${data.goldenTime}`;
+          }
+
+          // 환경 분석 근거 상세 UI 생성
+          const pm25Class = getPm25Class(data.pm25Value || 15);
+
+          document.getElementById("envContent").innerHTML = `
+          <!-- 기상 데이터 -->
+          <div class="env-section">
+            <div class="env-section-title">
+              <span>🌡 기상 데이터</span>
+              <span class="env-status-pill ${data.weatherRisk === "danger" ? "danger" : data.weatherRisk === "warning" ? "warning" : "safe"}">
+                ${data.weatherRisk === "danger" ? "위험" : data.weatherRisk === "warning" ? "주의" : "양호"}
+              </span>
+            </div>
+            <div class="env-grid">
+              <div class="env-metric">
+                <div class="env-metric-label">현재 기온</div>
+                <div class="env-metric-val">${data.temp}°C</div>
+              </div>
+              <div class="env-metric">
+                <div class="env-metric-label">체감 온도</div>
+                <div class="env-metric-val">${data.feelsLike}°C</div>
+              </div>
+              <div class="env-metric">
+                <div class="env-metric-label">습도</div>
+                <div class="env-metric-val">${data.humidity}%</div>
+              </div>
+              <div class="env-metric">
+                <div class="env-metric-label">풍속</div>
+                <div class="env-metric-val">${data.windSpeed} m/s</div>
+              </div>
+              <div class="env-metric full-width">
+                <div class="env-metric-label">기상 판정</div>
+                <div class="env-metric-val" style="font-size: 12px; font-weight: 600;">${data.weatherMessage}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 대기질 데이터 -->
+          <div class="env-section">
+            <div class="env-section-title">
+              <span>💨 대기질 데이터</span>
+              <span class="env-status-pill ${data.airStatus === "danger" ? "danger" : data.airStatus === "warning" ? "warning" : "safe"}">
+                ${data.airStatus === "danger" ? "위험" : data.airStatus === "warning" ? "주의" : "양호"}
+              </span>
+            </div>
+            <div class="env-grid">
+              <div class="env-metric">
+                <div class="env-metric-label">초미세먼지 (PM2.5)</div>
+                <div class="env-metric-val ${pm25Class}">${data.pm25}</div>
+              </div>
+              <div class="env-metric">
+                <div class="env-metric-label">미세먼지 (PM10)</div>
+                <div class="env-metric-val">${data.pm10}</div>
+              </div>
+              <div class="env-metric full-width">
+                <div class="env-metric-label">대기질 판정</div>
+                <div class="env-metric-val" style="font-size: 12px; font-weight: 600;">${data.airMessage}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 종합 분석 -->
+          <div class="env-reason-box">${data.reason}</div>
+          <div class="env-source">
+            📡 ${data.dataSource || "에어코리아 + 기상청"} · ${data.updatedAt || "방금 전"}
+          </div>
+        `;
+        } catch (err) {
+          console.error("API Fetch Error:", err);
+          document.getElementById("envContent").innerHTML = `
+          <div class="env-section" style="text-align: center; padding: 16px;">
+            <p style="color: #ef4444; font-weight: 700; margin-bottom: 6px;">⚠️ 환경 데이터를 불러올 수 없습니다</p>
+            <p style="color: #64748b; font-size: 12px;">http://localhost:3001 주소로 접속해 주세요.</p>
+            <button onclick="location.reload()" style="margin-top: 10px; padding: 6px 16px; border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600; font-size: 12px;">🔄 다시 시도</button>
+          </div>
+        `;
+          document.getElementById("heroTitle").innerText =
+            "환경 데이터 연결 실패";
+          document.getElementById("heroSub").innerText =
+            "localhost:3001 서버 접속 상태를 확인하세요.";
+        }
+      }
+
+      document
+        .querySelector("details.env-details")
+        .addEventListener("toggle", (e) => {
+          document.getElementById("envToggleLabel").innerText = e.target.open
+            ? "닫기"
+            : "열기";
+        });
+
+      window.onload = () => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => loadHealthData(pos.coords.latitude, pos.coords.longitude),
+            () => loadHealthData(37.5665, 126.978),
+          );
+        } else {
+          loadHealthData(37.5665, 126.978);
+        }
+      };
+    </script>
+  </body>
+</html>
