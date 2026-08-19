@@ -23,6 +23,10 @@ const OWM_KEY = ""; // 사용자가 키 없으면 기상청 API 사용
 
 app.use(express.static(path.join(__dirname, "public")));
 
+app.get(["/", "/index.html"], (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
 // ── 위경도 → TM 좌표 변환 (근사) ──
 function wgs84ToTM(lat, lon) {
   // 한국 중부 좌표계(EPSG:2097) 근사 변환
